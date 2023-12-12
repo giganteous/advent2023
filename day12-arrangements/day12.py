@@ -17,8 +17,11 @@ class Day12(BaseDay):
             """ .#...#....###. -> (1,1,3)"""
             return tuple(len(x) for x in s.split('.') if '#' in x)
 
-        def options(s: str):
-            return (s.replace('?', '{}').format(*x) for x in list(itertools.product(['.', '#'], repeat=s.count('?'))))
+        def options(s: str, negcache: set):
+            for x in list(itertools.product(['.', '#'], repeat=s.count('?'))):
+                t = s.replace('?', '{}').format(*x)
+                if t not in negcache:
+                    yield t
 
         def split(s: str):
             s, errors = s.split(' ')
@@ -28,9 +31,12 @@ class Day12(BaseDay):
             s, errors = split(springs)
             #print(s, errors)
             arrangements = 0
-            for o in options(s):
+            ncache = set()
+            for o in options(s, ncache):
                 if are_broken(o) == errors:
                     arrangements+=1
+                else:
+                    ncache.add(o)
             return arrangements
 
         print(sum(count_arrangements(x) for x in self.rows))
