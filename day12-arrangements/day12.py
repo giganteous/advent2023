@@ -35,6 +35,3 @@ class Day12(BaseDay):
 
         print(sum(count_arrangements(x) for x in self.rows))
 
-    def part2(self):
-        # Adding 4 questionmarks between the original
-        # conditionrecords makes my implementation too slow.
