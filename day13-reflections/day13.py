@@ -1,5 +1,5 @@
 from baseday import BaseDay
-
+from itertools import pairwise
 class Block():
     w = 0
     h = 0
@@ -10,37 +10,27 @@ class Block():
         self.h = h
         self.content = content
 
-    def row(self, i): # row1 == index[0]
-        assert(i > 0 and i <= self.h)
+    def row(self, i): # row(1) == index[0]
         offset = (i-1) * self.w
         return self.content[offset:offset+self.w]
+
     def col(self, i):
-        assert(i > 0 and i <= self.w)
         offset = i-1
         return self.content[offset::self.w]
 
     def scan_h(self):
-        for a, b in zip(range(1, self.h), range(2, self.h+1)):
+        for a, b in pairwise(range(1, self.h+1)):
             if self.row(a) == self.row(b):
-                # walk outward HEIGHT - min(a, b) steps
                 size = min(a-1, self.h - b)
                 if all(self.row(a-i) == self.row(b+i) for i in range(1, size+1)):
-                    #print(f'h match on row {a} and {b}')
-                    #print(self.row(a))
-                    #print(self.row(b))
-                    #print(f'walked outward {size} steps')
                     return a * 100
         return 0
 
     def scan_v(self):
-        for a, b in zip(range(1, self.w), range(2, self.w+1)):
+        for a, b in pairwise(range(1, self.w+1)):
             if self.col(a) == self.col(b):
                 size = min(a-1, self.w - b)
                 if all(self.col(a-i) == self.col(b+i) for i in range(1, size+1)):
-                    #print(f'v match on col {a} and {b}:')
-                    #print(self.col(a))
-                    #print(self.col(b))
-                    #print(f'walked outward {size} steps')
                     return a
         return 0
 
@@ -82,4 +72,4 @@ class Day13(BaseDay):
 
     def part2(self):
         # TBD
-
+        pass
