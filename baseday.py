@@ -11,18 +11,18 @@ def timestr(secs: float) -> str:
 
 class BaseDay():
     input: str
-    example: bool
-    no_init: bool
+    example: bool = False
+    no_init: bool = False
 
     def __init__(self, input: str | None = None, example: bool = False):
         dir, name = self.__module__.split('.')
         if input is None:
             if example:
                 input = dir + '/' + name + '-example.txt'
+                self.example = example
             else:
                 input = dir + '/' + name + '-input.txt'
         self.input = input
-        self.no_init = False
 
     def part1(self) -> None:
         raise NotImplementedError()

@@ -1,27 +1,27 @@
 from baseday import BaseDay
-from collections import namedtuple
-from typing import NamedTuple
+from dataclasses import dataclass
+from typing import Tuple
 import re
 
-class Lens(NamedTuple):
-    label: str = ''
-    desc: str = ''
-    F: int = 0
+m = re.compile(r'[-=]')
 
-    def __repr__(self):
+@dataclass
+class Lens(object):
+    label: str
+    desc: str
+    F: int
+    def __repr__(self) -> str:
         return f'[{self.desc}]'
 
-m = re.compile(r'[-=]')
 
 class Day15(BaseDay):
     data: str = ''
 
-    def init(self):
+    def init(self) -> None:
         with open(self.input) as fh:
             self.steps = fh.read().strip().split(',')
 
-    def part1(self):
-        total = 0
+    def part1(self) -> None:
         position = 0
         def hash(part: str) -> int:
             value = 0
@@ -31,15 +31,14 @@ class Day15(BaseDay):
                 value %= 256
             return value
 
+        total = 0
         for step in self.steps:
-            become = hash(step)
-            print(f'{step} becomes {become}.')
-            total += become
+            total += hash(step)
 
         print(total)
 
-    def part2(self):
-        def hash(part: str) -> (int, str, bool):
+    def part2(self) -> None:
+        def hash(part: str) -> Tuple[int, Lens, bool]:
             """return focuspower,label and operation of the lens"""
             label, F = re.split(m, part)
             add = True
@@ -54,12 +53,10 @@ class Day15(BaseDay):
                 h %= 256
             return h, Lens(label, f'{label} {F}', int(F)), add
 
-        boxes = []
-        for i in range(256): boxes.append([])
+        boxes: list[list[Lens]] = [[] for _ in range(256)]
         for step in self.steps:
             H, lens, add = hash(step)
             match = [b for b in boxes[H] if b.label == lens.label]
-            i = None
             if len(match):
                 i = boxes[H].index(match[0])
                 if add:
@@ -72,12 +69,14 @@ class Day15(BaseDay):
         focuspower = 0
         for b in range(len(boxes)):
             if len(boxes[b]):
-                #print(f'Box {b}: {" ".join(str(x) for x in boxes[b])}')
+                if self.example:
+                    print(f'Box {b}: {" ".join(str(x) for x in boxes[b])}')
                 # calculate
                 answer = (1+b)
                 for x in range(len(boxes[b])):
                     Y = (1+b) * (x+1) * boxes[b][x].F
-                    #print(f'{boxes[b][x].label}: {b+1} (box {b}) * {x+1} ({x+1} slot) * {boxes[b][x].F} (focal length) = {Y}')
+                    if self.example:
+                        print(f'{boxes[b][x].label}: {b+1} (box {b}) * {x+1} ({x+1} slot) * {boxes[b][x].F} (focal length) = {Y}')
                     focuspower += Y
         #print()
         print(focuspower)
