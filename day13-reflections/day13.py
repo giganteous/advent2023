@@ -1,24 +1,25 @@
 from baseday import BaseDay
 from itertools import pairwise
+
 class Block():
     w = 0
     h = 0
     content = ''
 
-    def __init__(self, w, h, content):
+    def __init__(self, w: int, h: int, content: str) -> None:
         self.w = w
         self.h = h
         self.content = content
 
-    def row(self, i): # row(1) == index[0]
+    def row(self, i: int) -> str: # row(1) == index[0]
         offset = (i-1) * self.w
         return self.content[offset:offset+self.w]
 
-    def col(self, i):
+    def col(self, i: int) -> str:
         offset = i-1
         return self.content[offset::self.w]
 
-    def scan_h(self):
+    def scan_h(self) -> int:
         for a, b in pairwise(range(1, self.h+1)):
             if self.row(a) == self.row(b):
                 size = min(a-1, self.h - b)
@@ -26,7 +27,7 @@ class Block():
                     return a * 100
         return 0
 
-    def scan_v(self):
+    def scan_v(self) -> int:
         for a, b in pairwise(range(1, self.w+1)):
             if self.col(a) == self.col(b):
                 size = min(a-1, self.w - b)
@@ -35,22 +36,22 @@ class Block():
         return 0
 
 class Day13(BaseDay):
-    blocks: list[str]
+    blocks: list[Block]
 
-    def init(self):
+    def init(self) -> None:
         with open(self.input) as fh:
-            blocks = []
             width = height = 0
-            content = []
+            content: list[str] = []
             for line in (x.strip() for x in fh.readlines()):
                 # new block
                 if not line:
-                    blocks.append(Block(width, height, ''.join(content)))
+                    self.blocks.append(Block(width, height, ''.join(content)))
                     width = height = 0
                     content = []
                     #print()
                     continue
-                #print(line)
+                if self.example:
+                    print(line)
 
                 height+=1
                 w = len(line)
@@ -60,16 +61,15 @@ class Day13(BaseDay):
                     print(f'weird length on {line}; C={content} w={width} h={height}')
                 content.append(line)
 
-            blocks.append(Block(width, height, ''.join(content)))
-        self.blocks = blocks
+            self.blocks.append(Block(width, height, ''.join(content)))
 
-    def part1(self):
+    def part1(self) -> None:
         total = 0
         for b in self.blocks:
             total += b.scan_v()
             total += b.scan_h()
         print(total)
 
-    def part2(self):
+    def part2(self) -> None:
         # TBD
         pass
