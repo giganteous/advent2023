@@ -48,3 +48,6 @@ class Day12(BaseDay):
 
         print(sum(count_arrangements(x) for x in self.rows))
 
+    def part2(self) -> None
+        pass # Got stuck on a happy path. TBD
+
