@@ -15,7 +15,10 @@ class Day18(BaseDay):
                 r = m.match(line)
                 if r:
                     self.program.append(r.groupdict())
+        self.parseprogram()
 
+    def parseprogram(self) -> None:
+        """enables fixup of .program, and re run this"""
         mn = (0, 0)
         mx = (0, 0)
         def update_minmax(c: Tuple[int, int]) -> None:
