@@ -2,17 +2,15 @@ from baseday import BaseDay
 from PIL import Image, ImageDraw
 import re
 from collections import namedtuple
-from dataclasses import dataclass
-from typing import Tuple, List
-import math
+from typing import Tuple
 
 Point = namedtuple('Point', ['x', 'y'])
 Directive = namedtuple('Directive', ['dir', 'dist'])
 
 m = re.compile('^(?P<dir>[RLDU]) (?P<dist>[0-9]+) \((?P<rgb>[0-9a-f\#]{7})\)$')
 class Day18(BaseDay):
-    colors: List[str] = []
-    program: List[Directive] = []
+    colors: list[str] = []
+    program: list[Directive] = []
 
     def init(self) -> None:
         with open(self.input) as fh:
@@ -23,25 +21,27 @@ class Day18(BaseDay):
                     self.program.append(Directive(x['dir'], int(x['dist'])))
                     self.colors.append(x['rgb'])
 
+    @staticmethod
+    def move(coord: Point, direction: int, dist: int) -> Point:
+        # 0 -> x+=N; 1 -> y+=N; 2 -> x-=N; 3 -> y-=N;
+        match (coord, direction, dist):
+            case ((x, y), 0 | 'R', l):
+                return Point(x+l, y)
+            case ((x, y), 1 | 'D', l):
+                return Point(x, y+l)
+            case ((x, y), 2 | 'L', l):
+                return Point(x-l, y)
+            case ((x, y), 3 | 'U', l):
+                return Point(x, y-l)
+        print(coord, direction, dist)
+        raise ValueError()
+
 
     def part1(self) -> None:
-        def move(coord: Point, direction: int, dist: int) -> Point:
-            # 0 -> x+=N; 1 -> y+=N; 2 -> x-=N; 3 -> y-=N;
-            match (coord, direction, dist):
-                case ((x, y), 0 | 'R', l):
-                    return Point(x+l, y)
-                case ((x, y), 1 | 'D', l):
-                    return Point(x, y+l)
-                case ((x, y), 2 | 'L', l):
-                    return Point(x-l, y)
-                case ((x, y), 3 | 'U', l):
-                    return Point(x, y-l)
-            raise ValueError()
-
         coords = []
         start = Point(0, 0)
         for p in self.program:
-            dest = move(start, p.dir, p.dist)
+            dest = self.move(start, p.dir, p.dist)
             coords.append(dest)
             start = dest
             if self.example: print(f'{p} -> {dest}')
@@ -75,6 +75,7 @@ class Day18(BaseDay):
         image.save('lagoon.png')
         print(sum(count for count, color in info if color != (255,255,255)))
 
+
     def part2(self) -> None:
         def shoelace(alist: list[Point], total_distance: int) -> int:
             s1 = sum(a.x*b.y for a, b in zip(alist, alist[1:]))
@@ -86,20 +87,6 @@ class Day18(BaseDay):
             # add the points under the boundary itself
             return int(interior) + total_distance
 
-        def move(coord: Point, direction: int, dist: int) -> Point:
-            # 0 -> x+=N; 1 -> y+=N; 2 -> x-=N; 3 -> y-=N;
-            match (coord, direction, dist):
-                case ((x, y), 0 | 'R', l):
-                    return Point(x+l, y)
-                case ((x, y), 1 | 'D', l):
-                    return Point(x, y+l)
-                case ((x, y), 2 | 'L', l):
-                    return Point(x-l, y)
-                case ((x, y), 3 | 'U', l):
-                    return Point(x, y-l)
-            print(coord, direction, dist)
-            raise ValueError()
-
         def fixup(rgb: str) -> Directive:
             return Directive(int(rgb[6]), int(rgb[1:6], base=16))
         #, int(rgb[6])
@@ -110,7 +97,7 @@ class Day18(BaseDay):
         for color in self.colors:
             direction, dist = fixup(color)
             circumference += dist
-            dest = move(start, direction, dist)
+            dest = self.move(start, direction, dist)
             coords.append(dest)
             start = dest
 
