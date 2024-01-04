@@ -76,12 +76,12 @@ class Day03(BaseDay):
     # topaz.github.io: this never maps any numbers that have no overlap
     def part3(self) -> None:
         total = 0
-        for x in range( self.h ):
-            for y in range( self.w ):
+        for x in range self.h):
+            for y in range(self.w):
                 if self.data[ x ][ y ] != '*': continue
 
                 parts = []
-                for j in range( max( x - 1, 0 ), min( x + 2, self.h ) ):
+                for j in range(max(x - 1, 0), min(x + 2, self.h)):
                     start, end = y, y
                     while start > 0 and self.data[ j ][ start - 1 ].isdigit():
                         start -= 1
@@ -89,6 +89,6 @@ class Day03(BaseDay):
                         end += 1
                     for num in [int(x) for x in numfind.findall(self.data[j][start:end+1])]:
                         parts.append(num)
-                if len( parts ) == 2:
+                if len(parts) == 2:
                     total += math.prod(parts)
         print(total)
