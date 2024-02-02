@@ -11,10 +11,16 @@ class Race(object):
     win: int = 0
 
     @staticmethod
-    def quadratic(a: int, b: int, c: int) -> tuple[float, float]:
-        root = math.sqrt(b**2 - 4 * a * c)
-        case1 = (-b + root) / 2 * a
-        case2 = (-b - root) / 2 * a
+    def quadratic(a: int, b: int, c: int) -> tuple[float, float] | None:
+        # calculate the value of X in "A*X**X + B*X + C = 0"
+        D = b**2 - 4 * a * c
+        # if D == 0, one answer.
+        # if D < 0, no answers
+        if D < 0:
+            raise ValueError()
+        root = math.sqrt(D)
+        case1 = (-b + root) / (2 * a)
+        case2 = (-b - root) / (2 * a)
         return case1, case2
 
     def ways(self) -> int:
@@ -22,7 +28,8 @@ class Race(object):
         # quadratic returns, inclusive.
         a, b = sorted(self.quadratic(-1, self.time, -self.win))
 
-        # first testrace: 2,3,4 and 5 are winning; 5-2+1
+        # third, 30ms and 200mm:
+        #  10.0-20.0: 20-10-1 => 9 (both 10 and 20 won't win)
         return math.ceil(b) - math.floor(a) - 1
 
 
@@ -42,7 +49,7 @@ class Day06(BaseDay):
         races = [race.ways() for race in self.races]
         print(reduce(mul, races))
 
-    def part2a(self) -> None:
+    def part2(self) -> None:
         r = Race(
             int("".join(str(race.time) for race in self.races)),
             int("".join(str(race.win) for race in self.races)),
